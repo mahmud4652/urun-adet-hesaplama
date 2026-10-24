@@ -1,0 +1,11 @@
+{
+  "name": "Ürün Adet Hesaplama",
+  "short_name": "Adet Hesaplama",
+  "description": "Ürün ağırlığından adet hesaplama uygulaması",
+  "start_url": "/urun-adet-hesaplama/",
+  "scope": "/urun-adet-hesaplama/",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#0f766e",
+  "lang": "tr"
+}
