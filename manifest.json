@@ -1,11 +1,23 @@
 {
-  "name": "Ürün Adet Hesaplama",
-  "short_name": "Adet Hesaplama",
-  "description": "Ürün ağırlığından adet hesaplama uygulaması",
+  "name": "CEDDO - TANFLEKS",
+  "short_name": "CEDDO",
+  "description": "TANFLEKS Ürün Adet Hesaplama Uygulaması",
   "start_url": "/urun-adet-hesaplama/",
   "scope": "/urun-adet-hesaplama/",
   "display": "standalone",
   "background_color": "#f1f5f9",
   "theme_color": "#0f766e",
-  "lang": "tr"
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }

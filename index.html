@@ -1,7 +1,8 @@
 <!doctype html><html lang="tr"><head><meta charset="utf-8"><link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <meta name="theme-color" content="#0f766e">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Adet Hesaplama"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ürün Adet Hesaplama</title><style>
+<meta name="apple-mobile-web-app-title" content="CEDDO"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ürün Adet Hesaplama</title><style>
 *{box-sizing:border-box}body{margin:0;background:#f1f5f9;color:#182638;font-family:system-ui,Arial,sans-serif}.wrap{max-width:940px;margin:auto;padding:20px 14px}header{background:linear-gradient(125deg,#0f766e,#164e83);color:white;border-radius:18px;padding:24px}h1{margin:0 0 6px;font-size:27px}header p{margin:0}.status{margin:14px 0;padding:12px;border-radius:10px;background:#fff7ed;color:#92400e}.status.ok{background:#dcfce7;color:#166534}.status.error{background:#fee2e2;color:#991b1b}.tabs{display:flex;gap:10px;margin:15px 0}.tabs button{flex:1}.card{background:white;border-radius:16px;padding:20px;margin-bottom:15px;box-shadow:0 3px 20px #0001}h2{font-size:20px;margin:0 0 14px}label{display:block;margin:12px 0 5px;font-weight:600}input,select{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font:inherit}button{background:#0f766e;color:white;border:0;border-radius:9px;padding:11px 14px;font:inherit;font-weight:600;cursor:pointer}button:disabled{opacity:.5;cursor:wait}.secondary{background:#e2e8f0;color:#334155}.danger{background:#fee2e2;color:#991b1b}.hidden{display:none}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.result{background:#ecfdf5;border-radius:13px;text-align:center;padding:20px;margin-top:18px}.result strong{display:block;font-size:40px;color:#047857}.muted{color:#64748b;font-size:14px}.row{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #e2e8f0;padding:12px 0}.actions{display:flex;gap:6px;flex-wrap:wrap}.actions button{padding:8px}.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}footer{text-align:center;color:#64748b;font-size:12px;padding:16px}@media(max-width:560px){.grid{grid-template-columns:1fr}.row{align-items:flex-start;flex-direction:column}}
  .weight-entry{display:flex;gap:8px}.weight-entry input{flex:1;min-width:0}.weight-entry select{width:110px;flex:none}.authbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}.authbar button{background:#ffffff;color:#115e59}.authbar span{font-size:13px}.authbox{max-width:460px}.authbox button{margin-top:14px} .history-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.history-summary{background:#ecfdf5;border-radius:10px;padding:12px;margin:12px 0;font-weight:600}.history-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.history-error{margin-top:10px}@media(max-width:560px){.history-controls{grid-template-columns:1fr}} 
 /* CEDDO visitor design refresh — visual CSS only; existing application logic untouched */
@@ -133,4 +134,19 @@ const originalCalculate=calculate;
 calculate=function(){originalCalculate();queueHistory()};
 async function init(){await restoreSession();await load();await loadHistory()}
 init();setInterval(()=>{if(!busy&&document.visibilityState==='visible')load(true);loadHistory()},15000);
-</script></body></html>
+</script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js")
+        .then(() => {
+          console.log("CEDDO Service Worker registered");
+        })
+        .catch((error) => {
+          console.error("Service Worker error:", error);
+        });
+    });
+  }
+</script>
+</body>
+</html>
