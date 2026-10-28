@@ -59,15 +59,31 @@ footer{color:#52728c;line-height:1.7;padding:18px 5px 10px}
 #kg::-webkit-inner-spin-button,#kg::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 #kg{-moz-appearance:textfield;appearance:textfield}
 
-/* CEDDO batch weighing */
-.batch-mode-bar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 4px}
-.batch-mode-bar button{flex:1;min-width:140px}
-.batch-panel{margin-top:18px;border:1px solid #b9e5df;background:linear-gradient(140deg,#f3fffd,#edf7ff);border-radius:18px;padding:18px}
-.batch-panel h3{margin:0 0 8px;color:#075c62}.batch-add{display:flex;gap:8px;align-items:stretch;margin:12px 0}.batch-add input{min-width:0;flex:1}.batch-add select{width:95px;flex:none}.batch-add button{white-space:nowrap}.batch-list{margin:12px 0;max-height:290px;overflow:auto}.batch-line{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border-bottom:1px solid #d2e8ed}.batch-line strong{font-size:15px}.batch-line button{padding:7px 10px}.batch-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:14px 0}.batch-stat{padding:13px;background:#fff;border-radius:12px;border:1px solid #d2e8ed}.batch-stat span{display:block;font-size:12px;color:#52728c}.batch-stat strong{font-size:21px;color:#087b72}.batch-actions{display:flex;gap:9px;flex-wrap:wrap}.batch-actions button{flex:1}.batch-note{font-size:13px;color:#53748b;margin:9px 0}.batch-alert{margin:9px 0;color:#9a3412;font-size:14px}.batch-panel .hidden{display:none}
-@media(max-width:560px){.batch-add{flex-wrap:wrap}.batch-add input{flex-basis:calc(100% - 105px)}.batch-add button{width:100%}.batch-stat strong{font-size:18px}}
-</style></head><body><div id="ceddoSplash" role="status" aria-label="CEDDO uygulaması açılıyor" aria-live="polite"><div class="splash-inner"><img class="splash-logo" src="./icon-512.png" alt="CEDDO – TANFLEKS" width="174" height="174"><div class="splash-title">CEDDO</div><p class="splash-brand">TANFLEKS</p><p class="splash-caption">Ürün Adet Hesaplama</p><span class="splash-spinner" aria-hidden="true"></span></div></div><main class="wrap"><header><h1>📦 Ürün Adet Hesaplama</h1><p>Ortak ürün listesi • Kilogram veya gramdan adet hesaplama</p><div class="authbar"><button id="loginBtn" onclick="showLogin()">🔐 Yönetici Girişi</button><button id="logoutBtn" class="hidden" onclick="logout()">Yönetici Çıkışı</button><span id="authState"></span></div></header><div id="status" class="status">Sunucuya bağlanılıyor...</div><div class="tabs"><button id="calcTab" onclick="tab('calc')">⚖️ Adet Hesaplama</button><button id="manageTab" class="secondary hidden" onclick="tab('manage')">📋 Ürün Yönetimi</button></div><section id="calc" class="card"><h2>Adet Hesaplama</h2><label for="calcSearch">Ürün Ara</label><input id="calcSearch" type="search" placeholder="Ürün adını yazın..." oninput="clearSavedWeightForNextProduct();onBatchProductSearch();renderOptions()"><label for="product">Ürün Seçin</label><select id="product" onchange="clearSavedWeightForNextProduct();onBatchProductChanged();calculate()"></select><div class="grid"><div><label for="kg">Toplam Ağırlık</label><div class="weight-entry"><input id="kg" type="number" min="0" step="any" inputmode="decimal" placeholder="Örn. 5.5" oninput="calculate()"><select id="weightUnit" aria-label="Ağırlık birimi" onchange="calculate()"><option value="kg">KG</option><option value="g">Gram</option></select></div></div><div><label for="pieceWeight">Birim Ağırlığı</label><input id="pieceWeight" readonly></div></div><div class="batch-mode-bar"><button type="button" id="singleModeBtn" onclick="setWeighMode('single')">⚖️ Tek Tartım</button><button type="button" id="batchModeBtn" class="secondary" onclick="setWeighMode('batch')">➕ Toplu Tartım</button></div><div id="batchPanel" class="batch-panel hidden"><h3>📦 Toplu Tartım – Ağırlıkları Topla</h3><p class="batch-note">Aynı ürünün her tartımını ekleyin. Yalnızca son toplamı kaydedin.</p><div class="batch-add"><input id="batchWeight" type="number" min="0" step="any" inputmode="decimal" placeholder="Örn. 2.5" aria-label="Eklenecek ağırlık"><select id="batchUnit" aria-label="Toplu tartım birimi"><option value="kg">KG</option><option value="g">Gram</option></select><button type="button" onclick="addBatchWeight()">＋ Ekle</button></div><div id="batchError" class="batch-alert hidden" role="alert"></div><div id="batchItems" class="batch-list" aria-live="polite"></div><div class="batch-stats"><div class="batch-stat"><span>Tartım Sayısı</span><strong id="batchCount">0</strong></div><div class="batch-stat"><span>Toplam Ağırlık</span><strong id="batchTotal">0 kg</strong></div><div class="batch-stat"><span>Toplam Parça</span><strong id="batchPieces">0</strong></div><div class="batch-stat"><span>Kalan Ağırlık</span><strong id="batchRemaining">0 g</strong></div></div><div class="batch-actions"><button type="button" id="batchSaveBtn" onclick="saveBatchTotal()" disabled>💾 Toplamı Kaydet</button><button type="button" class="secondary" onclick="resetBatch()">🔄 Yeni Tartım</button></div><p id="batchSaveStatus" class="batch-note" aria-live="polite">Kayıt yalnızca “Toplamı Kaydet” ile yapılır.</p></div><div id="singleResult" class="result">Tam Parça Sayısı<strong id="count">0</strong><div id="details" class="muted">Ürün seçin ve kilogram girin.</div></div></section><section id="history" class="card"><h2>📋 Hesaplama Geçmişi</h2><p class="muted">Hesaplamalar tüm ziyaretçiler tarafından görüntülenebilir.</p><div class="history-controls"><div><label for="historySearch">Ürün Ara</label><input id="historySearch" type="search" placeholder="Ürün adı..." oninput="renderHistory()"></div><div><label for="historyDate">Tarih</label><input id="historyDate" type="date" onchange="renderHistory()"></div></div><div id="historySummary" class="history-summary">Kayıtlar yükleniyor...</div><div class="history-actions"><button type="button" class="secondary" onclick="loadHistory()">🔄 Geçmişi Yenile</button><button type="button" class="secondary" onclick="exportHistory()">📥 Excel (CSV) İndir</button></div><div id="historyError" class="status error hidden"></div><div id="historyItems" aria-live="polite"><p class="muted">Geçmiş yükleniyor...</p></div></section><section id="login" class="card authbox hidden"><h2>🔐 Yönetici Girişi</h2><form id="loginForm"><label for="email">E-posta</label><input id="email" type="email" autocomplete="username" required><label for="password">Şifre</label><input id="password" type="password" autocomplete="current-password" required><button type="submit">Giriş Yap</button><button type="button" class="secondary" onclick="tab('calc')">İptal</button></form></section><section id="manage" class="hidden"><div class="card"><h2 id="formTitle">Yeni Ürün Ekle</h2><form id="form"><label for="name">Ürün Adı</label><input id="name" maxlength="100" required placeholder="Örn. 25 mm vida"><label for="grams">Birim Ağırlığı (Gram)</label><input id="grams" type="number" min="0.000001" step="any" required placeholder="Örn. 12.5"><div class="tools" style="margin-top:16px"><button id="saveBtn" type="submit">➕ Ürünü Kaydet</button><button id="cancelBtn" type="button" class="secondary hidden" onclick="resetForm()">İptal</button></div></form></div><div class="card"><h2>Kayıtlı Ürünler (<span id="total">0</span>)</h2><label for="manageSearch">Ürün Ara</label><input id="manageSearch" type="search" placeholder="Listede ara..." oninput="renderItems()"><div id="items"></div></div></section><div class="tools"><button class="secondary" onclick="load()">🔄 Listeyi Yenile</button><button class="secondary" onclick="exportData()">⬇️ Yedek İndir</button><button id="importBtn" class="secondary hidden" onclick="document.getElementById('importFile').click()">⬆️ Yedek İçe Aktar</button><input id="importFile" type="file" accept=".json,application/json" hidden onchange="importData(event)"></div><footer>Ürünler Supabase veritabanında saklanır. Ürün yönetimi yalnızca yetkili hesaplara açıktır. Düzenli yedek alın.</footer></main><script>
+/* CEDDO multi-product weighing */
+.multi-panel{margin-top:18px;border:1px solid #b9e5df;background:linear-gradient(140deg,#f3fffd,#edf7ff);border-radius:18px;padding:18px}.multi-panel h3{margin:0 0 8px;color:#075c62}.multi-grid{display:grid;grid-template-columns:1.5fr 1fr auto;gap:9px;align-items:end}.multi-grid label{margin:4px 0}.multi-grid button{white-space:nowrap}.multi-list{margin:14px 0}.multi-row{padding:13px 0;border-bottom:1px solid #cbdfe5}.multi-row-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.multi-row small{display:block;color:#52728c;margin-top:5px}.multi-row button{padding:7px 10px}.multi-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}.multi-stat{padding:13px;background:#fff;border-radius:12px;border:1px solid #d2e8ed}.multi-stat span{display:block;font-size:12px;color:#52728c}.multi-stat strong{font-size:20px;color:#087b72}.multi-actions{display:flex;gap:9px;flex-wrap:wrap}.multi-actions button{flex:1}.multi-note{font-size:13px;color:#53748b;margin:9px 0}.multi-error{color:#9a3412;margin:9px 0}.single-actions{margin-top:13px;display:flex;gap:9px;align-items:center;flex-wrap:wrap}.single-actions button{flex:1}.mode-bar{display:flex;gap:9px;margin:16px 0;flex-wrap:wrap}.mode-bar button{flex:1;min-width:140px}#kg::-webkit-inner-spin-button,#kg::-webkit-outer-spin-button,.multi-grid input::-webkit-inner-spin-button,.multi-grid input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.multi-grid input{appearance:textfield;-moz-appearance:textfield}@media(max-width:600px){.multi-grid{grid-template-columns:1fr 110px}.multi-grid>button{grid-column:1/-1}.multi-stats{grid-template-columns:1fr 1fr}.multi-stat strong{font-size:17px}}
+/* Shortcut for adding a new weighing to an existing product */
+.multi-reuse{flex-shrink:0;font-size:13px;padding:9px 12px;white-space:nowrap}
+@media(max-width:560px){.multi-row-head{flex-wrap:wrap}.multi-reuse{margin-left:auto}}
+/* Search suggestions for multi-product mode */
+.multi-search-wrap{position:relative;z-index:5}.multi-suggestions{position:relative;z-index:50;margin-top:5px;max-height:270px;overflow-y:auto;background:#fff;border:1px solid #a9d7dd;border-radius:13px;box-shadow:0 12px 26px #12364e30;padding:5px}.multi-suggestions.hidden{display:none}.multi-suggestion{display:block;width:100%;text-align:left;border:0;background:transparent;color:#16384c;border-radius:8px;padding:11px 13px;box-shadow:none;font-weight:550}.multi-suggestion:hover,.multi-suggestion:focus{background:#e0f7f4;color:#075c62;transform:none;box-shadow:none}.multi-no-match{padding:12px;color:#64748b;font-size:14px}
+</style></head><body><div id="ceddoSplash" role="status" aria-label="CEDDO uygulaması açılıyor" aria-live="polite"><div class="splash-inner"><img class="splash-logo" src="./icon-512.png" alt="CEDDO – TANFLEKS" width="174" height="174"><div class="splash-title">CEDDO</div><p class="splash-brand">TANFLEKS</p><p class="splash-caption">Ürün Adet Hesaplama</p><span class="splash-spinner" aria-hidden="true"></span></div></div><main class="wrap"><header><h1>📦 Ürün Adet Hesaplama</h1><p>Ortak ürün listesi • Kilogram veya gramdan adet hesaplama</p><div class="authbar"><button id="loginBtn" onclick="showLogin()">🔐 Yönetici Girişi</button><button id="logoutBtn" class="hidden" onclick="logout()">Yönetici Çıkışı</button><span id="authState"></span></div></header><div id="status" class="status">Sunucuya bağlanılıyor...</div><div class="tabs"><button id="calcTab" onclick="tab('calc')">⚖️ Adet Hesaplama</button><button id="manageTab" class="secondary hidden" onclick="tab('manage')">📋 Ürün Yönetimi</button></div><section id="calc" class="card"><h2>Adet Hesaplama</h2><div id="singleInputs"><label for="calcSearch">Ürün Ara</label><input id="calcSearch" type="search" placeholder="Ürün adını yazın..." oninput="resetSinglePreview();renderOptions()"><label for="product">Ürün Seçin</label><select id="product" onchange="resetSinglePreview()"></select><div class="grid"><div><label for="kg">Toplam Ağırlık</label><div class="weight-entry"><input id="kg" type="number" min="0" step="any" inputmode="decimal" placeholder="Örn. 5.5" oninput="resetSinglePreview()"><select id="weightUnit" aria-label="Ağırlık birimi" onchange="resetSinglePreview()"><option value="kg">KG</option><option value="g">Gram</option></select></div></div><div><label for="pieceWeight">Birim Ağırlığı</label><input id="pieceWeight" readonly></div></div></div><div class="mode-bar"><button type="button" id="singleModeBtn" onclick="setWeighMode('single')">⚖️ Tek Tartım</button><button type="button" id="multiModeBtn" class="secondary" onclick="setWeighMode('multi')">📦 Çoklu Hesaplama</button></div><div id="singlePanel"><div class="single-actions"><button type="button" id="singleCalcBtn" onclick="calculateSingleAndSave()">🧮 Hesapla ve Kaydet</button></div><p id="singleMessage" class="multi-note" role="status">Ağırlığı girin; kayıt yalnızca Hesapla ve Kaydet düğmesiyle yapılır.</p><div id="singleResult" class="result">Tam Parça Sayısı<strong id="count">0</strong><div id="details" class="muted">Ürün seçin ve kilogram girin.</div></div></div><div id="multiPanel" class="multi-panel hidden"><h3>📦 Çoklu Ürün Hesaplama</h3><p class="multi-note">Farklı ürünlere birden fazla ağırlık ekleyebilirsiniz. Her ürünün parçaları ayrı hesaplanır.</p><label for="multiSearch">Ürün Ara</label><div class="multi-search-wrap"><input id="multiSearch" type="search" placeholder="Ürün adı yazın..." autocomplete="off" aria-autocomplete="list" aria-controls="multiSuggestions" aria-expanded="false" oninput="renderMultiOptions()"><div id="multiSuggestions" class="multi-suggestions hidden" role="listbox"></div></div><div id="multiChosen" class="multi-note" aria-live="polite">Henüz ürün seçilmedi.</div><select id="multiProduct" class="hidden" aria-label="Seçilen ürün"></select><div class="multi-grid"><div><label for="multiWeight">Ağırlık</label><input id="multiWeight" type="number" min="0" step="any" inputmode="decimal" placeholder="Örn. 2.5"></div><div><label for="multiUnit">Birim</label><select id="multiUnit"><option value="kg">KG</option><option value="g">Gram</option></select></div><button type="button" id="multiAddBtn" onclick="addMultiWeight()">＋ Ağırlık Ekle</button></div><div id="multiError" class="multi-error hidden" role="alert"></div><div id="multiItems" class="multi-list" aria-live="polite"></div><div class="multi-stats"><div class="multi-stat"><span>Ürün Sayısı</span><strong id="multiProductsCount">0</strong></div><div class="multi-stat"><span>Toplam Ağırlık</span><strong id="multiTotal">0 kg</strong></div><div class="multi-stat"><span>Toplam Parça</span><strong id="multiPieces">0</strong></div></div><div class="multi-actions"><button type="button" id="multiSaveBtn" onclick="saveMultiTotal()" disabled>💾 Toplamı Kaydet</button><button type="button" class="secondary" onclick="resetMulti()">🔄 Yeni Hesaplama</button></div><p id="multiSaveStatus" class="multi-note" role="status">Kayıt yalnızca Toplamı Kaydet ile yapılır. Her ürün geçmişe ayrı kaydedilir.</p></div></section><section id="history" class="card"><h2>📋 Hesaplama Geçmişi</h2><p class="muted">Hesaplamalar tüm ziyaretçiler tarafından görüntülenebilir.</p><div class="history-controls"><div><label for="historySearch">Ürün Ara</label><input id="historySearch" type="search" placeholder="Ürün adı..." oninput="renderHistory()"></div><div><label for="historyDate">Tarih</label><input id="historyDate" type="date" onchange="renderHistory()"></div></div><div id="historySummary" class="history-summary">Kayıtlar yükleniyor...</div><div class="history-actions"><button type="button" class="secondary" onclick="loadHistory()">🔄 Geçmişi Yenile</button><button type="button" class="secondary" onclick="exportHistory()">📥 Excel (CSV) İndir</button></div><div id="historyError" class="status error hidden"></div><div id="historyItems" aria-live="polite"><p class="muted">Geçmiş yükleniyor...</p></div></section><section id="login" class="card authbox hidden"><h2>🔐 Yönetici Girişi</h2><form id="loginForm"><label for="email">E-posta</label><input id="email" type="email" autocomplete="username" required><label for="password">Şifre</label><input id="password" type="password" autocomplete="current-password" required><button type="submit">Giriş Yap</button><button type="button" class="secondary" onclick="tab('calc')">İptal</button></form></section><section id="manage" class="hidden"><div class="card"><h2 id="formTitle">Yeni Ürün Ekle</h2><form id="form"><label for="name">Ürün Adı</label><input id="name" maxlength="100" required placeholder="Örn. 25 mm vida"><label for="grams">Birim Ağırlığı (Gram)</label><input id="grams" type="number" min="0.000001" step="any" required placeholder="Örn. 12.5"><div class="tools" style="margin-top:16px"><button id="saveBtn" type="submit">➕ Ürünü Kaydet</button><button id="cancelBtn" type="button" class="secondary hidden" onclick="resetForm()">İptal</button></div></form></div><div class="card"><h2>Kayıtlı Ürünler (<span id="total">0</span>)</h2><label for="manageSearch">Ürün Ara</label><input id="manageSearch" type="search" placeholder="Listede ara..." oninput="renderItems()"><div id="items"></div></div></section><div class="tools"><button class="secondary" onclick="load()">🔄 Listeyi Yenile</button><button class="secondary" onclick="exportData()">⬇️ Yedek İndir</button><button id="importBtn" class="secondary hidden" onclick="document.getElementById('importFile').click()">⬆️ Yedek İçe Aktar</button><input id="importFile" type="file" accept=".json,application/json" hidden onchange="importData(event)"></div><footer>Ürünler Supabase veritabanında saklanır. Ürün yönetimi yalnızca yetkili hesaplara açıktır. Düzenli yedek alın.</footer></main><script>
 let weighMode='single';
-const BASE="https://eduhwwqirrwjgtrbpgcp.supabase.co",KEY="sb_publishable_W0dcsZAyYQbAPqs_9mupbw_J27Agjrk",API=BASE+'/rest/v1/urunlar';const $=id=>document.getElementById(id);let products=[],editing=null,busy=false,accessToken=null,admin=false;const ADMIN_UID='ab26ecf8-b25a-4985-9972-ace0ca0f1ca7';function status(msg,type=''){const el=$('status');el.textContent=msg;el.className='status '+type}function tab(t){if(t==='manage'&&!admin)return showLogin();$('login').classList.toggle('hidden',t!=='login');$('calc').classList.toggle('hidden',t!=='calc');$('manage').classList.toggle('hidden',t!=='manage');$('calcTab').className=t==='calc'?'':'secondary';$('manageTab').className=t==='manage'?'':'secondary'}async function req(path='',options={}){if(admin){await ensureFreshSession()}const r=await fetch(API+path,{...options,headers:{'apikey':KEY,'Authorization':'Bearer '+(accessToken||KEY),'Content-Type':'application/json',...(options.headers||{})}});if(!r.ok){let s=await r.text();throw Error('HTTP '+r.status+': '+s.slice(0,220))}return r.status===204?null:await r.text().then(t=>t?JSON.parse(t):null)}async function load(silent=false){if(busy)return;try{const data=await req('?select=id,urun_adi,gram,created_at&order=urun_adi.asc');products=(data||[]).map(p=>({id:String(p.id),name:p.urun_adi,grams:Number(p.gram)}));render();if(!silent)status('✓ Bağlandı • Ürün listesi güncel','ok')}catch(e){status('Bağlantı hatası: '+e.message,'error')}}function render(){ $('total').textContent=products.length;renderOptions();renderItems()}function renderOptions(){const old=$('product').value,term=$('calcSearch').value.trim().toLocaleLowerCase('tr-TR'),matching=products.filter(p=>p.name.toLocaleLowerCase('tr-TR').includes(term));$('product').replaceChildren(new Option(matching.length?'Ürün Seçin':'Ürün bulunamadı',''));matching.forEach(p=>$('product').add(new Option(p.name,p.id)));if(matching.some(p=>p.id===old))$('product').value=old;calculate()}function renderItems(){if(!admin)return;const term=$('manageSearch').value.trim().toLocaleLowerCase('tr-TR');$('items').replaceChildren();const matches=products.filter(p=>p.name.toLocaleLowerCase('tr-TR').includes(term));if(!matches.length){const e=document.createElement('p');e.className='muted';e.textContent='Ürün bulunamadı.';$('items').append(e)}for(const p of matches){const row=document.createElement('div');row.className='row';const info=document.createElement('div'),title=document.createElement('b'),desc=document.createElement('div');title.textContent=p.name;desc.className='muted';desc.textContent='Birim ağırlığı: '+p.grams+' gram';info.append(title,desc);const actions=document.createElement('div');actions.className='actions';const edit=document.createElement('button');edit.className='secondary';edit.textContent='Düzenle';edit.onclick=()=>editProduct(p.id);const del=document.createElement('button');del.className='danger';del.textContent='Sil';del.onclick=()=>removeProduct(p.id);actions.append(edit,del);row.append(info,actions);$('items').append(row)}}function calculate(){const p=products.find(x=>x.id===$('product').value),kg=Number($('kg').value);$('pieceWeight').value=p?p.grams+' gram':'';if(!p||$('kg').value===''||!Number.isFinite(kg)||kg<0){$('count').textContent='0';$('details').textContent='Ürün seçin ve geçerli bir ağırlık girin.';return}const g=$('weightUnit').value==='kg'?kg*1000:kg,n=Math.floor(g/p.grams+1e-10),remaining=Math.max(0,g-n*p.grams);$('count').textContent=n.toLocaleString('tr-TR');$('details').textContent='Toplam: '+g.toLocaleString('tr-TR',{maximumFractionDigits:4})+' gram • Birim: '+p.grams.toLocaleString('tr-TR',{maximumFractionDigits:6})+' gram • Kalan: '+remaining.toLocaleString('tr-TR',{maximumFractionDigits:4})+' gram'}function resetForm(){editing=null;$('form').reset();$('formTitle').textContent='Yeni Ürün Ekle';$('saveBtn').textContent='➕ Ürünü Kaydet';$('cancelBtn').classList.add('hidden')}function editProduct(id){if(!admin)return;const p=products.find(x=>x.id===id);if(!p)return;editing=id;$('name').value=p.name;$('grams').value=p.grams;$('formTitle').textContent='Ürünü Düzenle';$('saveBtn').textContent='Değişiklikleri Kaydet';$('cancelBtn').classList.remove('hidden');tab('manage');window.scrollTo({top:0,behavior:'smooth'})}function setBusy(v){busy=v;$('saveBtn').disabled=v} $('form').onsubmit=async e=>{e.preventDefault();if(busy||!admin)return;const name=$('name').value.trim(),gram=Number($('grams').value);if(!name||!Number.isFinite(gram)||gram<=0){alert('Geçerli ürün adı ve sıfırdan büyük ağırlık girin.');return}setBusy(true);try{if(editing)await req('?id=eq.'+encodeURIComponent(editing),{method:'PATCH',body:JSON.stringify({urun_adi:name,gram})});else await req('',{method:'POST',body:JSON.stringify({urun_adi:name,gram})});resetForm();status('✓ Ürün kaydedildi','ok');setBusy(false);await load(true)}catch(e){status('Kaydetme başarısız: '+e.message,'error');setBusy(false)}};async function removeProduct(id){if(!admin)return;if(!confirm('Bu ürünü kalıcı olarak silmek istiyor musunuz?'))return;try{await req('?id=eq.'+encodeURIComponent(id),{method:'DELETE'});if(editing===id)resetForm();status('✓ Ürün silindi','ok');await load(true)}catch(e){status('Silme başarısız: '+e.message,'error')}}function exportData(){const data=products.map(p=>({name:p.name,grams:p.grams}));const u=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download='urunler-yedek-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}async function importData(e){if(!admin)return;const f=e.target.files?.[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!Array.isArray(d)||!d.every(p=>p&&typeof(p.name??p.urun_adi)==='string'&&String(p.name??p.urun_adi).trim()&&Number(p.grams??p.gram)>0))throw Error('Geçersiz yedek');if(!confirm(d.length+' ürün ortak veritabanına EKLENECEK. Mevcut ürünler silinmeyecek. Devam?'))return;busy=true;let n=0;for(const p of d){await req('',{method:'POST',body:JSON.stringify({urun_adi:String(p.name??p.urun_adi).trim(),gram:Number(p.grams??p.gram)})});n++}busy=false;await load(true);status('✓ '+n+' ürün aktarıldı','ok')}catch(err){busy=false;status('İçe aktarma hatası: '+err.message,'error')}finally{e.target.value=''}}
+const BASE="https://eduhwwqirrwjgtrbpgcp.supabase.co",KEY="sb_publishable_W0dcsZAyYQbAPqs_9mupbw_J27Agjrk",API=BASE+'/rest/v1/urunlar';const $=id=>document.getElementById(id);let products=[],editing=null,busy=false,accessToken=null,admin=false;const ADMIN_UID='ab26ecf8-b25a-4985-9972-ace0ca0f1ca7';function status(msg,type=''){const el=$('status');el.textContent=msg;el.className='status '+type}function tab(t){if(t==='manage'&&!admin)return showLogin();$('login').classList.toggle('hidden',t!=='login');$('calc').classList.toggle('hidden',t!=='calc');$('manage').classList.toggle('hidden',t!=='manage');$('calcTab').className=t==='calc'?'':'secondary';$('manageTab').className=t==='manage'?'':'secondary'}async function req(path='',options={}){if(admin){await ensureFreshSession()}const r=await fetch(API+path,{...options,headers:{'apikey':KEY,'Authorization':'Bearer '+(accessToken||KEY),'Content-Type':'application/json',...(options.headers||{})}});if(!r.ok){let s=await r.text();throw Error('HTTP '+r.status+': '+s.slice(0,220))}return r.status===204?null:await r.text().then(t=>t?JSON.parse(t):null)}async function load(silent=false){if(busy)return;try{const data=await req('?select=id,urun_adi,gram,created_at&order=urun_adi.asc');products=(data||[]).map(p=>({id:String(p.id),name:p.urun_adi,grams:Number(p.gram)}));render();if(!silent)status('✓ Bağlandı • Ürün listesi güncel','ok')}catch(e){status('Bağlantı hatası: '+e.message,'error')}}function render(){ $('total').textContent=products.length;renderOptions();renderItems()}function renderOptions(){
+ const selector=$('product');
+ const old=selector.value;
+ const term=$('calcSearch').value.trim().toLocaleLowerCase('tr-TR');
+ const matches=products.filter(p=>p.name.toLocaleLowerCase('tr-TR').includes(term));
+ selector.replaceChildren(new Option(matches.length?'Ürün Seçin':'Ürün bulunamadı',''));
+ for(const p of matches)selector.add(new Option(p.name,p.id));
+ // Search text immediately selects the first match in Tek Tartım.
+ // When search is empty, preserve a manually chosen product if still available.
+ if(term){selector.value=matches.length?matches[0].id:'';}
+ else if(matches.some(p=>p.id===old)){selector.value=old;}
+ else{selector.value='';}
+ calculate();
+ if(typeof resetSinglePreview==='function')resetSinglePreview();
+}
+function renderItems(){if(!admin)return;const term=$('manageSearch').value.trim().toLocaleLowerCase('tr-TR');$('items').replaceChildren();const matches=products.filter(p=>p.name.toLocaleLowerCase('tr-TR').includes(term));if(!matches.length){const e=document.createElement('p');e.className='muted';e.textContent='Ürün bulunamadı.';$('items').append(e)}for(const p of matches){const row=document.createElement('div');row.className='row';const info=document.createElement('div'),title=document.createElement('b'),desc=document.createElement('div');title.textContent=p.name;desc.className='muted';desc.textContent='Birim ağırlığı: '+p.grams+' gram';info.append(title,desc);const actions=document.createElement('div');actions.className='actions';const edit=document.createElement('button');edit.className='secondary';edit.textContent='Düzenle';edit.onclick=()=>editProduct(p.id);const del=document.createElement('button');del.className='danger';del.textContent='Sil';del.onclick=()=>removeProduct(p.id);actions.append(edit,del);row.append(info,actions);$('items').append(row)}}function calculate(){const p=products.find(x=>x.id===$('product').value),kg=Number($('kg').value);$('pieceWeight').value=p?p.grams+' gram':'';if(!p||$('kg').value===''||!Number.isFinite(kg)||kg<0){$('count').textContent='0';$('details').textContent='Ürün seçin ve geçerli bir ağırlık girin.';return}const g=$('weightUnit').value==='kg'?kg*1000:kg,n=Math.floor(g/p.grams+1e-10),remaining=Math.max(0,g-n*p.grams);$('count').textContent=n.toLocaleString('tr-TR');$('details').textContent='Toplam: '+g.toLocaleString('tr-TR',{maximumFractionDigits:4})+' gram • Birim: '+p.grams.toLocaleString('tr-TR',{maximumFractionDigits:6})+' gram • Kalan: '+remaining.toLocaleString('tr-TR',{maximumFractionDigits:4})+' gram'}function resetForm(){editing=null;$('form').reset();$('formTitle').textContent='Yeni Ürün Ekle';$('saveBtn').textContent='➕ Ürünü Kaydet';$('cancelBtn').classList.add('hidden')}function editProduct(id){if(!admin)return;const p=products.find(x=>x.id===id);if(!p)return;editing=id;$('name').value=p.name;$('grams').value=p.grams;$('formTitle').textContent='Ürünü Düzenle';$('saveBtn').textContent='Değişiklikleri Kaydet';$('cancelBtn').classList.remove('hidden');tab('manage');window.scrollTo({top:0,behavior:'smooth'})}function setBusy(v){busy=v;$('saveBtn').disabled=v} $('form').onsubmit=async e=>{e.preventDefault();if(busy||!admin)return;const name=$('name').value.trim(),gram=Number($('grams').value);if(!name||!Number.isFinite(gram)||gram<=0){alert('Geçerli ürün adı ve sıfırdan büyük ağırlık girin.');return}setBusy(true);try{if(editing)await req('?id=eq.'+encodeURIComponent(editing),{method:'PATCH',body:JSON.stringify({urun_adi:name,gram})});else await req('',{method:'POST',body:JSON.stringify({urun_adi:name,gram})});resetForm();status('✓ Ürün kaydedildi','ok');setBusy(false);await load(true)}catch(e){status('Kaydetme başarısız: '+e.message,'error');setBusy(false)}};async function removeProduct(id){if(!admin)return;if(!confirm('Bu ürünü kalıcı olarak silmek istiyor musunuz?'))return;try{await req('?id=eq.'+encodeURIComponent(id),{method:'DELETE'});if(editing===id)resetForm();status('✓ Ürün silindi','ok');await load(true)}catch(e){status('Silme başarısız: '+e.message,'error')}}function exportData(){const data=products.map(p=>({name:p.name,grams:p.grams}));const u=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download='urunler-yedek-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}async function importData(e){if(!admin)return;const f=e.target.files?.[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!Array.isArray(d)||!d.every(p=>p&&typeof(p.name??p.urun_adi)==='string'&&String(p.name??p.urun_adi).trim()&&Number(p.grams??p.gram)>0))throw Error('Geçersiz yedek');if(!confirm(d.length+' ürün ortak veritabanına EKLENECEK. Mevcut ürünler silinmeyecek. Devam?'))return;busy=true;let n=0;for(const p of d){await req('',{method:'POST',body:JSON.stringify({urun_adi:String(p.name??p.urun_adi).trim(),gram:Number(p.grams??p.gram)})});n++}busy=false;await load(true);status('✓ '+n+' ürün aktarıldı','ok')}catch(err){busy=false;status('İçe aktarma hatası: '+err.message,'error')}finally{e.target.value=''}}
 const SESSION_KEY='urun_admin_session';
 function showLogin(){tab('login');$('email').focus()}
 function applyAuth(){ $('manageTab').classList.toggle('hidden',!admin);$('importBtn').classList.toggle('hidden',!admin);$('loginBtn').classList.toggle('hidden',admin);$('logoutBtn').classList.toggle('hidden',!admin);$('authState').textContent=admin?'✓ Yönetici oturumu açık':'';if(!admin){resetForm();tab('calc')}else renderItems();if(typeof renderHistory==='function')renderHistory()}
@@ -173,7 +189,7 @@ function exportHistory(){
  const a=document.createElement('a');a.href=url;a.download='hesaplama-gecmisi-'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 const originalCalculate=calculate;
-calculate=function(){originalCalculate();queueHistory()};
+calculate=function(){ /* no automatic calculation or saving */ };
 // Faster startup: show a recent product list immediately, then verify it online.
 const CEDDO_PRODUCT_CACHE='ceddo_product_cache_v1';
 function showCachedProducts(){
@@ -264,136 +280,214 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 </script>
 
 <script>
-/* Separate batch mode: never auto-save individual batch weights. */
-let batchWeights=[];
-let batchProductId='';
-let batchSaving=false;
-let batchSaved=false;
-const batchFormat=(n,d=3)=>Number(n).toLocaleString('tr-TR',{maximumFractionDigits:d});
-function batchMessage(message=''){$('batchError').textContent=message;$('batchError').classList.toggle('hidden',!message)}
+/* Explicit save only; no history writes on typing or changing product. */
+let singleSaving=false, singleLastSignature='';
+function resetSinglePreview(){
+ singleLastSignature='';
+ clearTimeout(historyTimer); historyTimer=null;
+ $('count').textContent='0'; $('details').textContent='Hesaplamak için Hesapla ve Kaydet düğmesine basın.';
+ $('pieceWeight').value=(products.find(p=>p.id===$('product').value)?.grams??'')+' gram';
+ $('singleMessage').textContent='Ağırlığı kontrol edin ve Hesapla ve Kaydet düğmesine basın.';
+}
+async function calculateSingleAndSave(){
+ if(singleSaving||weighMode!=='single')return;
+ const p=products.find(x=>x.id===$('product').value),raw=$('kg').value.trim(),weight=Number(raw);
+ if(!p||!raw||!Number.isFinite(weight)||weight<=0||!Number.isFinite(p.grams)||p.grams<=0){$('singleMessage').textContent='Önce ürün seçin ve sıfırdan büyük geçerli bir ağırlık girin.';return}
+ const grams=weight*($('weightUnit').value==='kg'?1000:1);
+ if(!Number.isFinite(grams)||grams<=0){$('singleMessage').textContent='Geçersiz ağırlık.';return}
+ const count=Math.floor(grams/p.grams+1e-10),remaining=Math.max(0,grams-count*p.grams);
+ if(!Number.isSafeInteger(count)){ $('singleMessage').textContent='Ağırlık çok büyük.';return}
+ const signature=JSON.stringify([p.id,grams,p.grams]);
+ if(signature===singleLastSignature){$('singleMessage').textContent='✓ Bu ölçüm zaten kaydedildi. Yeni ölçüm için ağırlığı değiştirin veya ürün seçin.';return}
+ singleSaving=true;$('singleCalcBtn').disabled=true;$('singleMessage').textContent='Kaydediliyor…';
+ $('count').textContent=count.toLocaleString('tr-TR');
+ $('details').textContent='Toplam: '+grams.toLocaleString('tr-TR',{maximumFractionDigits:6})+' gram • Birim: '+p.grams+' gram • Kalan: '+remaining.toLocaleString('tr-TR',{maximumFractionDigits:6})+' gram';
+ try{
+  const payload={urun_adi:p.name,toplam_agirlik:grams,agirlik_birimi:'gram',birim_agirligi:p.grams,parca_sayisi:count,kalan_gram:remaining};
+  const r=await fetch(HISTORY_API,{method:'POST',headers:{...historyHeaders(true),'Prefer':'return=minimal'},body:JSON.stringify(payload)});
+  if(!r.ok)throw Error('HTTP '+r.status+': '+(await r.text()).slice(0,180));
+  singleLastSignature=signature;
+  $('singleMessage').textContent='✓ Hesaplandı ve geçmişe kaydedildi.';
+  await loadHistory();
+ }catch(e){$('singleMessage').textContent='Kaydedilemedi: '+e.message+' • Tekrar deneyebilirsiniz.'}
+ finally{singleSaving=false;$('singleCalcBtn').disabled=false}
+}
+let multiWeights=[],multiSaving=false,multiSaved=false,multiSavedIds=new Set();
+const fmt=(n,d=3)=>Number(n).toLocaleString('tr-TR',{maximumFractionDigits:d});
+function multiMessage(msg=''){$('multiError').textContent=msg;$('multiError').classList.toggle('hidden',!msg)}
 function setWeighMode(mode){
  if(mode===weighMode)return;
- if(mode==='single'&&batchWeights.length&&!batchSaved&&!confirm('Kaydedilmemiş toplu tartım silinsin mi?'))return;
- if(mode==='batch'){
-   clearTimeout(historyTimer);
-   historyTimer=null;
-   savedWeightReadyForNextProduct=false;
-   $('kg').value='';
-   lastSavedSignature='';
-   originalCalculate();
-   batchProductId=$('product').value;
- }else{
-   batchWeights=[];batchProductId='';batchSaved=false;
- }
+ if(mode==='single'&&multiWeights.length&&!multiSaved&&!confirm('Kaydedilmemiş çoklu hesaplama saklanmayacak. Devam?'))return;
  weighMode=mode;
- $('batchPanel').classList.toggle('hidden',mode!=='batch');
- $('singleResult').classList.toggle('hidden',mode==='batch');
- $('kg').disabled=mode==='batch';
- $('weightUnit').disabled=mode==='batch';
- $('singleModeBtn').classList.toggle('secondary',mode!=='single');
- $('batchModeBtn').classList.toggle('secondary',mode!=='batch');
- batchMessage();renderBatch();
+ hideMultiSuggestions();
+ $('singleInputs').classList.toggle('hidden',mode!=='single');$('singlePanel').classList.toggle('hidden',mode!=='single');$('multiPanel').classList.toggle('hidden',mode!=='multi');
+ $('singleModeBtn').classList.toggle('secondary',mode!=='single');$('multiModeBtn').classList.toggle('secondary',mode!=='multi');
+ $('kg').disabled=mode!=='single';$('weightUnit').disabled=mode!=='single';
+ clearTimeout(historyTimer);historyTimer=null;
+ renderMulti();
 }
-function onBatchProductSearch(){
- if(weighMode!=='batch')return;
- // Search can temporarily remove the selection; keep the batch tied to its original product.
- if(batchWeights.length){
-   if(!batchSaved&&!confirm('Ürün araması mevcut toplu tartımı silecek. Devam?')){
-     $('calcSearch').value='';return;
-   }
-   batchWeights=[];batchSaved=false;
+function hideMultiSuggestions(){
+ $('multiSuggestions').classList.add('hidden');$('multiSearch').setAttribute('aria-expanded','false');
+}
+function chooseMultiProduct(id){
+ const p=products.find(x=>x.id===id);if(!p)return;
+ $('multiProduct').value=p.id;
+ $('multiSearch').value=p.name;
+ hideMultiSuggestions();multiMessage();
+ $('multiWeight').focus();
+}
+function renderMultiOptions(){
+  const term=$('multiSearch').value.trim().toLocaleLowerCase('tr-TR');
+  const matches=term?products.filter(p=>p.name.toLocaleLowerCase('tr-TR').includes(term)):[];
+  const selector=$('multiProduct');
+  selector.replaceChildren(new Option(matches.length?'Ürün Seçin':'Ürün bulunamadı',''));
+  for(const p of matches)selector.add(new Option(p.name,p.id));
+  // Automatically select the first matching product as the operator types.
+  // The user does not need to open the product dropdown.
+  selector.value=matches.length?matches[0].id:'';
+  $('multiChosen').textContent=matches.length?'✓ Seçilen ürün: '+matches[0].name:'Henüz ürün seçilmedi.';
+  const suggestions=$('multiSuggestions');suggestions.replaceChildren();
+  if(!term||weighMode!=='multi'){hideMultiSuggestions();return}
+  if(!matches.length){const empty=document.createElement('div');empty.className='multi-no-match';empty.textContent='Eşleşen ürün bulunamadı.';suggestions.append(empty)}
+  for(const p of matches.slice(0,30)){
+    const btn=document.createElement('button');btn.type='button';btn.className='multi-suggestion';btn.setAttribute('role','option');btn.textContent=p.name;
+    btn.addEventListener('mousedown',e=>e.preventDefault());
+    btn.addEventListener('click',()=>chooseMultiProduct(p.id));suggestions.append(btn);
+  }
+  suggestions.classList.remove('hidden');$('multiSearch').setAttribute('aria-expanded','true');
+}
+
+$('multiSearch').addEventListener('focus',()=>{if($('multiSearch').value.trim())renderMultiOptions()});
+$('multiSearch').addEventListener('keydown',e=>{
+ if(e.key==='Escape'){hideMultiSuggestions();return}
+ if(e.key==='Enter'&&(!$('multiSuggestions').classList.contains('hidden'))){
+  const first=$('multiSuggestions').querySelector('.multi-suggestion');if(first){e.preventDefault();first.click()}
  }
- batchProductId='';renderBatch();
-}
-function onBatchProductChanged(){
- if(weighMode!=='batch')return;
- const next=$('product').value;
- if(batchWeights.length&&batchProductId!==next){
-   if(!batchSaved&&!confirm('Ürün değiştirilsin mi? Kaydedilmemiş tartımlar silinecek.')){
-     $('product').value=batchProductId;return;
-   }
-   batchWeights=[];batchSaved=false;
+ if(e.key==='ArrowDown'&&!$('multiSuggestions').classList.contains('hidden')){
+  const first=$('multiSuggestions').querySelector('.multi-suggestion');if(first){e.preventDefault();first.focus()}
  }
- batchProductId=next;batchMessage();renderBatch();
+});
+$('multiSuggestions').addEventListener('keydown',e=>{
+ const buttons=[...$('multiSuggestions').querySelectorAll('.multi-suggestion')],index=buttons.indexOf(document.activeElement);
+ if(e.key==='ArrowDown'){e.preventDefault();buttons[Math.min(index+1,buttons.length-1)]?.focus()}
+ if(e.key==='ArrowUp'){e.preventDefault();if(index===0)$('multiSearch').focus();else buttons[index-1]?.focus()}
+ if(e.key==='Escape'){e.preventDefault();hideMultiSuggestions();$('multiSearch').focus()}
+});
+$('multiProduct').addEventListener('change',()=>{
+ const p=products.find(x=>x.id===$('multiProduct').value);
+ if(p)$('multiSearch').value=p.name;
+ hideMultiSuggestions();
+});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.multi-search-wrap'))hideMultiSuggestions()});
+
+function multiGroups(){
+ const groups=new Map();
+ for(const entry of multiWeights){
+  if(!groups.has(entry.id))groups.set(entry.id,{id:entry.id,name:entry.name,pieceGrams:entry.pieceGrams,weights:[],grams:0});
+  const g=groups.get(entry.id);g.weights.push(entry);g.grams+=entry.grams;
+ }
+ return [...groups.values()].map(g=>({...g,count:Math.floor(g.grams/g.pieceGrams+1e-10),remaining:Math.max(0,g.grams-Math.floor(g.grams/g.pieceGrams+1e-10)*g.pieceGrams)}));
 }
-function batchStats(){
- const p=products.find(x=>x.id===batchProductId);
- const grams=batchWeights.reduce((sum,x)=>sum+x.grams,0);
- const count=p&&p.grams>0?Math.floor(grams/p.grams+1e-10):0;
- const remaining=p&&p.grams>0?Math.max(0,grams-count*p.grams):0;
- return {p,grams,count,remaining};
+// Reuse an already weighed product with one click; do not save anything yet.
+function reuseMultiProduct(id){
+ if(weighMode!=='multi'||multiSaving||multiSaved||multiSavedIds.has(id))return;
+ const p=products.find(x=>x.id===id);
+ if(!p){multiMessage('Ürün listede bulunamadı. Listeyi yenileyin.');return}
+ // Refresh the hidden selector using the same search flow as a typed name.
+ $('multiSearch').value=p.name;
+ renderMultiOptions();
+ chooseMultiProduct(id);
+ $('multiWeight').value='';
+ $('multiWeight').focus();
+ multiMessage();
 }
-function renderBatch(){
- const list=$('batchItems');list.replaceChildren();
- if(!batchWeights.length){const hint=document.createElement('p');hint.className='muted';hint.textContent='Henüz ağırlık eklenmedi.';list.append(hint)}
- batchWeights.forEach((entry,i)=>{
-   const line=document.createElement('div');line.className='batch-line';
-   const text=document.createElement('span');text.textContent=(i+1)+'. tartım: '+batchFormat(entry.value,6)+' '+(entry.unit==='kg'?'kg':'g');
-   const remove=document.createElement('button');remove.type='button';remove.className='danger';remove.textContent='Sil';remove.disabled=batchSaving||batchSaved;remove.onclick=()=>removeBatchWeight(i);
-   line.append(text,remove);list.append(line);
- });
- const {p,grams,count,remaining}=batchStats();
- $('batchCount').textContent=batchWeights.length.toLocaleString('tr-TR');
- $('batchTotal').textContent=batchFormat(grams/1000,6)+' kg';
- $('batchPieces').textContent=batchFormat(count,0);
- $('batchRemaining').textContent=batchFormat(remaining,6)+' g';
- $('batchSaveBtn').disabled=batchSaving||batchSaved||!batchWeights.length||!p;
- $('batchSaveBtn').textContent=batchSaving?'Kaydediliyor…':batchSaved?'✓ Kaydedildi':'💾 Toplamı Kaydet';
- $('batchWeight').disabled=batchSaving||batchSaved;
- $('batchUnit').disabled=batchSaving||batchSaved;
- $('batchSaveStatus').textContent=batchSaved?'✓ Toplam kaydedildi. Yeni tartım başlatabilirsiniz.':'Kayıt yalnızca “Toplamı Kaydet” ile yapılır.';
+function renderMulti(){
+ const list=$('multiItems');list.replaceChildren();const groups=multiGroups();
+ if(!groups.length){const p=document.createElement('p');p.className='muted';p.textContent='Henüz ürün veya ağırlık eklenmedi.';list.append(p)}
+ for(const g of groups){
+  const box=document.createElement('div');box.className='multi-row';
+  const head=document.createElement('div');head.className='multi-row-head';
+  const title=document.createElement('b');title.textContent=g.name+' — '+fmt(g.count,0)+' adet';
+  const info=document.createElement('small');info.textContent='Toplam: '+fmt(g.grams/1000,6)+' kg • Birim: '+fmt(g.pieceGrams,6)+' g • Kalan: '+fmt(g.remaining,6)+' g';
+  const namebox=document.createElement('div');namebox.append(title,info);
+  // The existing product heading is a one-click shortcut to add another weight.
+  const reuse=document.createElement('button');reuse.type='button';reuse.className='multi-reuse';
+  reuse.textContent='＋ Tekrar Tart';reuse.title=g.name+' için yeni ağırlık ekle';
+  reuse.disabled=multiSaving||multiSaved||multiSavedIds.has(g.id);
+  reuse.onclick=()=>reuseMultiProduct(g.id);
+  head.append(namebox,reuse);box.append(head);
+  for(const w of g.weights){
+   const line=document.createElement('div');line.className='multi-row-head';line.style.padding='6px 0';
+   const label=document.createElement('span');label.textContent='↳ '+fmt(w.value,6)+' '+(w.unit==='kg'?'kg':'g');
+   const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Sil';del.disabled=multiSaving||multiSavedIds.has(g.id);del.onclick=()=>removeMultiWeight(w.key);
+   line.append(label,del);box.append(line);
+  }
+  if(multiSavedIds.has(g.id)){const done=document.createElement('small');done.textContent='✓ Kaydedildi';box.append(done)}
+  list.append(box);
+ }
+ $('multiProductsCount').textContent=fmt(groups.length,0);
+ $('multiTotal').textContent=fmt(groups.reduce((s,g)=>s+g.grams,0)/1000,6)+' kg';
+ $('multiPieces').textContent=fmt(groups.reduce((s,g)=>s+g.count,0),0);
+ $('multiSaveBtn').disabled=multiSaving||!groups.length||groups.every(g=>multiSavedIds.has(g.id));
+ $('multiSaveBtn').textContent=multiSaving?'Kaydediliyor…':groups.length&&groups.every(g=>multiSavedIds.has(g.id))?'✓ Kaydedildi':'💾 Toplamı Kaydet';
+ $('multiAddBtn').disabled=multiSaving||multiSaved;
+ $('multiWeight').disabled=multiSaving||multiSaved;
+ $('multiProduct').disabled=multiSaving||multiSaved;
+ $('multiSearch').disabled=multiSaving||multiSaved;
+ $('multiUnit').disabled=multiSaving||multiSaved;
 }
-function addBatchWeight(){
- if(weighMode!=='batch'||batchSaving||batchSaved)return;
- const selected=$('product').value;
- const p=products.find(x=>x.id===selected);
- if(!p){batchMessage('Önce bir ürün seçin.');return}
- if(batchWeights.length&&batchProductId!==selected){batchMessage('Ürün değişti. Yeni tartım başlatın.');return}
- const raw=$('batchWeight').value.trim(),value=Number(raw),unit=$('batchUnit').value;
- if(!raw||!Number.isFinite(value)||value<=0){batchMessage('Sıfırdan büyük geçerli bir ağırlık girin.');return}
+function addMultiWeight(){
+ if(multiSaving||multiSaved)return;
+ const p=products.find(x=>x.id===$('multiProduct').value),raw=$('multiWeight').value.trim(),value=Number(raw),unit=$('multiUnit').value;
+ if(!p){multiMessage('Önce ürün seçin.');return}
+ if(!raw||!Number.isFinite(value)||value<=0){multiMessage('Sıfırdan büyük geçerli bir ağırlık girin.');return}
  const grams=value*(unit==='kg'?1000:1);
- if(!Number.isFinite(grams)||grams<=0){batchMessage('Geçersiz ağırlık.');return}
- batchProductId=selected;
- batchWeights.push({value,unit,grams});batchMessage();
- $('batchWeight').value='';renderBatch();$('batchWeight').focus();
+ if(!Number.isFinite(grams)||grams<=0||!Number.isFinite(p.grams)||p.grams<=0){multiMessage('Geçersiz ağırlık.');return}
+ if(multiSavedIds.has(p.id)){multiMessage('Bu ürün zaten kaydedildi. Yeni hesaplama başlatın.');return}
+ multiWeights.push({key:crypto.randomUUID?.()||String(Date.now())+Math.random(),id:p.id,name:p.name,pieceGrams:p.grams,value,unit,grams});
+ $('multiWeight').value='';$('multiSearch').value='';$('multiProduct').value='';$('multiChosen').textContent='Henüz ürün seçilmedi.';hideMultiSuggestions();multiMessage();renderMulti();$('multiSearch').focus();
 }
-function removeBatchWeight(index){if(batchSaving||batchSaved)return;batchWeights.splice(index,1);batchMessage();renderBatch()}
-function resetBatch(){
- if(batchSaving)return;
- if(batchWeights.length&&!batchSaved&&!confirm('Kaydedilmemiş tartımlar silinsin mi?'))return;
- batchWeights=[];batchSaved=false;batchProductId=$('product').value;
- $('batchWeight').value='';batchMessage();renderBatch();$('batchWeight').focus();
+function removeMultiWeight(key){if(multiSaving)return;multiWeights=multiWeights.filter(w=>w.key!==key);multiMessage();renderMulti()}
+function resetMulti(){
+ if(multiSaving)return;
+ if(multiWeights.length&&!multiSaved&&!confirm('Kaydedilmemiş hesaplamalar silinsin mi?'))return;
+ multiWeights=[];multiSaved=false;multiSavedIds.clear();$('multiWeight').value='';multiMessage();$('multiSaveStatus').textContent='Kayıt yalnızca Toplamı Kaydet ile yapılır. Her ürün geçmişe ayrı kaydedilir.';renderMulti();
 }
-async function saveBatchTotal(){
- if(batchSaving||batchSaved||weighMode!=='batch'||!batchWeights.length)return;
- const {p,grams,count,remaining}=batchStats();
- if(!p||p.id!==$('product').value){batchMessage('Ürünü yeniden seçin.');return}
- batchSaving=true;batchMessage();renderBatch();
+async function saveMultiTotal(){
+ if(multiSaving||!multiWeights.length||weighMode!=='multi')return;
+ const groups=multiGroups();multiSaving=true;multiMessage();renderMulti();
  try{
-   // Existing history table columns: store one final combined measurement.
-   const payload={urun_adi:p.name,toplam_agirlik:grams,agirlik_birimi:'gram',birim_agirligi:p.grams,parca_sayisi:count,kalan_gram:remaining};
+  for(const g of groups){
+   if(multiSavedIds.has(g.id))continue;
+   if(!Number.isSafeInteger(g.count))throw Error('Parça sayısı çok büyük: '+g.name);
+   $('multiSaveStatus').textContent='Kaydediliyor: '+g.name;
+   const payload={urun_adi:g.name,toplam_agirlik:g.grams,agirlik_birimi:'gram',birim_agirligi:g.pieceGrams,parca_sayisi:g.count,kalan_gram:g.remaining};
    const r=await fetch(HISTORY_API,{method:'POST',headers:{...historyHeaders(true),'Prefer':'return=minimal'},body:JSON.stringify(payload)});
-   if(!r.ok)throw Error('HTTP '+r.status+': '+(await r.text()).slice(0,180));
-   batchSaved=true;
-   await loadHistory();
- }catch(e){batchMessage('Toplam kaydedilemedi: '+e.message)}
- finally{batchSaving=false;renderBatch()}
+   if(!r.ok)throw Error(g.name+': HTTP '+r.status+' '+(await r.text()).slice(0,130));
+   multiSavedIds.add(g.id);
+  }
+  multiSaved=true;$('multiSaveStatus').textContent='✓ '+groups.length+' ürün geçmişe kaydedildi. Yeni hesaplama başlatabilirsiniz.';
+  await loadHistory();
+ }catch(e){multiMessage('Kayıt tamamlanamadı: '+e.message+' • Kaydedilen ürünler tekrar gönderilmeyecek.');$('multiSaveStatus').textContent='Eksik kalan ürünler için Toplamı Kaydet düğmesine yeniden basın.';await loadHistory()}
+ finally{multiSaving=false;renderMulti()}
 }
-$('batchWeight').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addBatchWeight()}if(['ArrowUp','ArrowDown','PageUp','PageDown'].includes(e.key))e.preventDefault()});
-$('batchWeight').addEventListener('wheel',e=>{if(document.activeElement===$('batchWeight'))e.preventDefault()},{passive:false});
-// Product lists may refresh in the background: never silently switch an active batch to another product.
-const originalRenderOptionsForBatch=renderOptions;
-renderOptions=function(){
- originalRenderOptionsForBatch();
- if(weighMode==='batch'){
-   if(batchWeights.length&&batchProductId&&$('product').value!==batchProductId){
-     const stillAvailable=Array.from($('product').options).some(x=>x.value===batchProductId);
-     if(stillAvailable)$('product').value=batchProductId;
-   }
-   renderBatch();
- }
-};
-renderBatch();
+// Tek Tartım: Enter in product search moves to weight input, without saving.
+$('calcSearch').addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.isComposing) return;
+  e.preventDefault();
+  if (weighMode !== 'single') return;
+  if (!$('product').value) {
+    $('singleMessage').textContent = 'Eşleşen ürün bulunamadı. Lütfen ürün adını kontrol edin.';
+    return;
+  }
+  $('kg').focus();
+  $('kg').select();
+});
+$('multiWeight').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addMultiWeight()}if(['ArrowUp','ArrowDown','PageUp','PageDown'].includes(e.key))e.preventDefault()});
+$('multiWeight').addEventListener('wheel',e=>{if(document.activeElement===$('multiWeight'))e.preventDefault()},{passive:false});
+const originalRenderOptionsForMulti=renderOptions;
+renderOptions=function(){originalRenderOptionsForMulti();renderMultiOptions()};
+renderMultiOptions();renderMulti();resetSinglePreview();
 </script>
 </body>
 </html>
